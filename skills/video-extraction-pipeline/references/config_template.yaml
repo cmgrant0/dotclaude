@@ -1,0 +1,168 @@
+# Video Extraction Pipeline Configuration Template
+# This config file controls the video processing pipeline and can be customized for any video course
+
+# Gemini API Configuration
+# API key can be set here or via GEMINI_API_KEY environment variable (recommended)
+# api_key: "your-api-key-here"  # Uncomment and add key if not using env variable
+
+# Model selection: gemini-2.5-pro (best quality) or gemini-2.5-flash (faster/cheaper)
+model: "gemini-2.5-pro"
+
+# Rate limiting: seconds to wait between video processing (avoid API throttling)
+# Free tier: Use 60 seconds to avoid rate limits
+rate_limit_delay: 60
+
+# Course context provided to Gemini for better extraction
+# Customize this section to describe your specific course/content
+course_context: |
+  This is an educational video course covering [TOPIC/SUBJECT AREA].
+  The course is structured into multiple sections covering [KEY THEMES].
+  The teaching style is [DESCRIBE TEACHING APPROACH - e.g., hands-on, theoretical, example-driven].
+  The content targets [DESCRIBE TARGET AUDIENCE - e.g., beginners, professionals, students].
+
+# Output format specification
+output_format: |
+  Structure the output as a comprehensive markdown file with the following sections:
+
+  1. **Learning Objectives** - What students should know/be able to do after this lesson
+     - Use clear bullet points
+     - Focus on measurable outcomes
+
+  2. **Key Concepts** - Main ideas, definitions, theories presented
+     - Use clear headers for each concept
+     - Include definitions and explanations
+     - Provide context for why each concept matters
+
+  3. **Step-by-Step Explanations** - How concepts are broken down and taught
+     - Use numbered lists for procedures
+     - Include specific details and examples
+     - Preserve the teaching sequence
+
+  4. **Examples & Demonstrations** - Specific examples used to illustrate concepts
+     - Use transcript snippets that capture nuance and context
+     - Include specific numbers, scenarios, or case studies
+     - Quote the instructor when the phrasing adds important clarity
+
+  5. **Practice Problems** - Any exercises or problems presented
+     - List problems exactly as presented
+     - Include solution approaches if provided
+
+  6. **Common Mistakes** - Pitfalls or misconceptions addressed
+     - What NOT to do
+     - Why these mistakes happen
+     - How to avoid them
+
+  7. **Summary & Key Takeaways** - Essential points to remember
+     - 2-3 sentence recap of the lesson
+     - Bulleted list of main points
+
+  Use formatting:
+  - **Bold** for key terms and emphasis
+  - *Italics* for quotes or important phrases
+  - > Blockquotes for direct quotes from instructor
+  - Code blocks for formulas, code, or structured content
+  - Nested bullets for hierarchical information
+  - Tables where appropriate for comparisons or structured data
+
+# Extraction prompt template
+# Placeholders: {title}, {section}, {course_context}, {output_format}
+prompt_template: |
+  You are analyzing an educational video lesson.
+
+  **Lesson Title:** {title}
+  **Course Section:** {section}
+
+  **Course Context:**
+  {course_context}
+
+  **Your Task:**
+  Extract all key concepts, learning objectives, examples, and instructional content from this video.
+  Focus on capturing the SPECIFICITY and CLARITY of the instruction by including relevant transcript snippets.
+
+  Do NOT:
+  - Invent or hallucinate content not in the video
+  - Add your own opinions or additional teaching
+  - Summarize in vague or generic terms
+
+  DO:
+  - Extract complete explanations with all steps/components
+  - Include specific examples, numbers, formulas, or data points mentioned
+  - Quote transcript snippets that illustrate important points or clarify concepts
+  - Preserve the instructor's teaching style and terminology
+  - Identify practice exercises and learning checkpoints
+  - Note any common mistakes or misconceptions addressed
+
+  {output_format}
+
+# Video list for processing
+# Supports both LOCAL VIDEO FILES and YOUTUBE URLs
+# For local files: use 'path' and 'filename'
+# For YouTube: use 'youtube_url' (no download needed!)
+# This is an EXAMPLE structure - replace with your actual video paths/URLs
+videos:
+  # Example: Local video file
+  - path: "../videos/01-introduction/lesson1-overview.mp4"
+    output: "../extracted/01-introduction/lesson1-overview.md"
+    title: "Lesson 1 - Course Overview"
+    section: "Introduction"
+    filename: "lesson1-overview.mp4"
+
+  # Example: YouTube video (no download required!)
+  - youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    output: "../extracted/01-introduction/lesson2-youtube.md"
+    title: "Lesson 2 - Core Fundamentals (YouTube)"
+    section: "Introduction"
+
+  # Example: Core Content Section
+  - path: "../videos/02-core-concepts/lesson3-concept-a.mp4"
+    output: "../extracted/02-core-concepts/lesson3-concept-a.md"
+    title: "Lesson 3 - Understanding Concept A"
+    section: "Core Concepts"
+    filename: "lesson3-concept-a.mp4"
+
+  - path: "../videos/02-core-concepts/lesson4-concept-b.mp4"
+    output: "../extracted/02-core-concepts/lesson4-concept-b.md"
+    title: "Lesson 4 - Understanding Concept B"
+    section: "Core Concepts"
+    filename: "lesson4-concept-b.mp4"
+
+  # Example: Advanced Topics Section
+  - path: "../videos/03-advanced/lesson5-application.mp4"
+    output: "../extracted/03-advanced/lesson5-application.md"
+    title: "Lesson 5 - Practical Application"
+    section: "Advanced Topics"
+    filename: "lesson5-application.mp4"
+
+  - path: "../videos/03-advanced/lesson6-case-study.mp4"
+    output: "../extracted/03-advanced/lesson6-case-study.md"
+    title: "Lesson 6 - Real-World Case Study"
+    section: "Advanced Topics"
+    filename: "lesson6-case-study.mp4"
+
+# CUSTOMIZATION NOTES:
+#
+# 1. Model Selection:
+#    - Use gemini-2.5-pro for highest quality extraction
+#    - Use gemini-2.5-flash for 40% cost savings with slightly lower quality
+#
+# 2. Rate Limiting:
+#    - Free tier: Set to 60 seconds minimum
+#    - Paid tier: Can reduce to 2-5 seconds
+#
+# 3. Course Context:
+#    - Replace with description of your specific course
+#    - Include teaching style, target audience, and key themes
+#    - This helps Gemini understand context and extract better
+#
+# 4. Prompt Template:
+#    - For other content types (technical, business, fitness, etc.)
+#    - See references/prompt_library.md for 10+ specialized templates
+#    - Copy the relevant template and customize for your needs
+#
+# 5. Video List:
+#    - LOCAL FILES: Use 'path' with relative paths from scripts/ directory
+#    - YOUTUBE VIDEOS: Use 'youtube_url' with full YouTube URL
+#    - Mix both types in the same config file!
+#    - YouTube limitations: Only public videos, 8-hour daily limit per account
+#    - Recommended structure: mirror video folder organization for local files
+#    - Include descriptive titles and section labels for better metadata
